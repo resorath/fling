@@ -18,7 +18,6 @@ battle.create = function()
         }
     });
 
-    console.log(this.asteroid.bodies[0].frictionAir);
     this.attractorActive = false;
 
     this.ship = this.matter.add.image(400, 200, 'ship', null, {
