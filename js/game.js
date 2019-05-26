@@ -16,7 +16,8 @@ var config = {
             plugins: {
                 attractors: true
             }
-        }
+        }, 
+        debug: true
     },
     scene: [battle]
 };

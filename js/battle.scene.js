@@ -42,9 +42,9 @@ battle.create = function()
                     var bToA = a.subtract(b);
                     distanceSq = bToA.lengthSq() || 0.0001;
                     normal = bToA.normalize();
-                    magnitude = gravityConstant * (bodyA.mass * bodyB.mass / distanceSq) * 5000/bodyB.mass;
+                    magnitude = gravityConstant * (bodyA.mass * bodyB.mass / distanceSq) * 5000/bodyB.mass; // the last bit is our dragger for different body masses to feel heavier or lighter
                     force = new Phaser.Math.Vector2({x: normal.x * magnitude, y: normal.y * magnitude});
-                    console.log(force);
+                   // console.log(force);
                     return force;
 
                     /* old and terrible
@@ -78,7 +78,7 @@ battle.create = function()
         label: "list asteroid"
     });*/
 
-    this.asteroids.push(
+   /* this.asteroids.push(
         this.matter.add.image(100, 100, 'asteroid', null, {
         density: 3,
         shape: {
@@ -87,6 +87,7 @@ battle.create = function()
         },
         label: "asteroid"
     }));
+    this.asteroids[0].setData("i", 0);*/
 
     this.asteroids.push(
         this.matter.add.image(100, 100, 'asteroid', null, {
@@ -97,19 +98,41 @@ battle.create = function()
         },
         label: "asteroid"
     }));
-    this.asteroids[1].setScale(2);
+    this.asteroids[0].setScale(2);
 
     this.matter.world.on('collisionstart', function(event, bodyA, bodyB) {
 
-        console.log(bodyA.label);
         if(bodyA.label == "opponent" && bodyB.label == "asteroid")
         {
-            console.log("HIT!");
+            battle.asteroidCollide(bodyA, bodyB);
+        }
+
+        if(bodyA.label == "asteroid" && bodyB.label == "opponent")
+        {
+            battle.asteroidCollide(bodyB, bodyA);
         }
 
     })
 
 },
+
+battle.asteroidCollide = function(opponent, asteroid)
+{
+    //bodies = Matter.Composite.allBodies(battle.matter.world.engine.world);
+    for(i=0; i<battle.asteroids.length;i++)
+    {
+        if(asteroid == battle.asteroids[i].body)
+        {
+            battle.asteroids[i].destroy();
+            battle.asteroids[i] = null;
+            battle.asteroids.splice(i);
+            return;
+        }
+    }
+    // asteroid.destroy();
+    //this.asteroids[asteroid.id].destroy();
+    //this.asteroids[asteroid.id] = null;
+}
 
 battle.update = function() 
 {
@@ -125,9 +148,14 @@ battle.update = function()
    );
 
    for(i=0; i < this.asteroids.length; i++)
-    if(this.attractorActive)
-        this.asteroids[i].body.frictionAir = 0.01;
-    else
-        this.asteroids[i].body.frictionAir = 0;
+   {
+        if(this.asteroids[i] == null)
+            continue;
+
+        if(this.attractorActive)
+            this.asteroids[i].body.frictionAir = 0.01;
+        else
+            this.asteroids[i].body.frictionAir = 0;
+   }
 
 }
