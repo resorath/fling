@@ -20,10 +20,19 @@ battle.create = function()
 
     this.attractorActive = false;
 
+    // divider
+    dividerpoly = '0 0 20 0 20 5000 0 5000';
+    this.divider = this.add.polygon(2000, 0, dividerpoly, 0xffffff, 1.0);
+    this.matter.add.gameObject(this.divider, { shape: { type: 'fromVerts', verts: dividerpoly, flagInternal: true, isStatic: true } }).setStatic(true);
+   // divider.gameObject.setTint(0xffffff);
+
+    this.asteroidCollisionCategory = this.matter.world.nextCategory();
+    this.shipCollisionCategory = this.matter.world.nextCategory();
+
     this.ship = this.matter.add.image(400, 200, 'ship', null, {
         shape: {
             type: 'circle',
-            radius: 48
+            radius: 90 // actually 48
         },
         density: 1000,
         label: "ship",
@@ -42,10 +51,11 @@ battle.create = function()
                     var b = new Phaser.Math.Vector2(bodyB.position.x, bodyB.position.y);
                     var bToA = a.subtract(b);
                     distanceSq = bToA.lengthSq() || 0.0001;
+                    distanceSq = Math.pow(distanceSq, 1/1.1); // screw with this number some more
                     normal = bToA.normalize();
                     //magnitude = gravityConstant * (bodyA.mass * bodyB.mass / distanceSq)
-                    //magnitude = gravityConstant * (100 * bodyB.mass / distanceSq );
-                    magnitude = gravityConstant * (10000 * Math.sqrt(bodyB.mass, 2) / (distanceSq ) );
+                    magnitude = gravityConstant * (100 * bodyB.mass / distanceSq );
+                    //magnitude = gravityConstant * (10000 * Math.sqrt(bodyB.mass, 2) / (distanceSq ) );
                     force = new Phaser.Math.Vector2({x: normal.x * magnitude, y: normal.y * magnitude});
                    // console.log(force);
                     return force;
@@ -63,14 +73,18 @@ battle.create = function()
         }
     });
 
+    this.ship.setCollisionCategory(this.shipCollisionCategory);
+
     this.opponent = this.matter.add.image(3800, 1000, 'ship', null, {
         shape: {
             type: 'circle',
-            radius: 48
+            radius: 90
         },
         label: "opponent",
         density: 1000
     });
+
+    this.opponent.setCollisionCategory(this.shipCollisionCategory);
 
     // generate some asteroids
     for(i=0; i<20; i++)
@@ -82,15 +96,18 @@ battle.create = function()
             density: 1,
             shape: {
                 type: 'circle',
-                radius: 20 * size,
+                radius: 20 * (size * 0.6),
             },
-            label: "asteroid"
+            label: "asteroid",
+            frictionAir: 0
         }));
         this.asteroids[i].setScale(size);
         this.asteroids[i].setVelocity(randInRange(-4, 4), randInRange(-4,4));
+        this.asteroids[i].setCollisionCategory(this.asteroidCollisionCategory);
 
     }
 
+    this.divider.setCollidesWith(this.shipCollisionCategory);
     
 
     this.matter.world.on('collisionstart', function(event, bodyA, bodyB) {
@@ -138,10 +155,15 @@ battle.update = function()
     this.attractorActive = this.input.activePointer.isDown;
 
    theship = this.ship.body;
+
+   directionmod = 1;
+   if(theship.position.x > 1940)
+    directionmod = -3;
+
    Matter.Body.translate(
        theship, 
        {
-           x: (battle.input.activePointer.x - theship.position.x) * 0.05, 
+           x: (battle.input.activePointer.x - theship.position.x) * 0.05 * directionmod, 
            y: (battle.input.activePointer.y - theship.position.y) * 0.05
        }
    );

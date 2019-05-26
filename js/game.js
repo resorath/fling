@@ -15,9 +15,11 @@ var config = {
             },
             plugins: {
                 attractors: true
-            }
-        }, 
-        debug: true
+            },
+            debug: true,
+            debugShowInternalEdges: true,
+            debugShowConvexHulls: true
+        }
     },
     scene: [battle]
 };
