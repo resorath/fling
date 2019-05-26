@@ -1,10 +1,15 @@
+var globals = {
+    width: 1900,
+    height: 1050
+}
+
 var config = {
     type: Phaser.AUTO,
     debug: true,
     scale: {
         mode: Phaser.Scale.FIT,
-        width: 4000,
-        height: 2250
+        width: globals.width,
+        height: globals.height
     },
     backgroundColor: '#000000',
     physics: {

@@ -22,7 +22,7 @@ battle.create = function()
 
     // divider
     dividerpoly = '0 0 20 0 20 5000 0 5000';
-    this.divider = this.add.polygon(2000, 0, dividerpoly, 0xffffff, 1.0);
+    this.divider = this.add.polygon(globals.width / 2, 0, dividerpoly, 0xffffff, 1.0);
     this.matter.add.gameObject(this.divider, { shape: { type: 'fromVerts', verts: dividerpoly, flagInternal: true, isStatic: true } }).setStatic(true);
    // divider.gameObject.setTint(0xffffff);
 
@@ -54,7 +54,7 @@ battle.create = function()
                     distanceSq = Math.pow(distanceSq, 1/1.1); // screw with this number some more
                     normal = bToA.normalize();
                     //magnitude = gravityConstant * (bodyA.mass * bodyB.mass / distanceSq)
-                    magnitude = gravityConstant * (100 * bodyB.mass / distanceSq );
+                    magnitude = gravityConstant * (30 * bodyB.mass / distanceSq );
                     //magnitude = gravityConstant * (10000 * Math.sqrt(bodyB.mass, 2) / (distanceSq ) );
                     force = new Phaser.Math.Vector2({x: normal.x * magnitude, y: normal.y * magnitude});
                    // console.log(force);
@@ -72,10 +72,11 @@ battle.create = function()
             ]
         }
     });
+    this.ship.setScale(0.5);
 
     this.ship.setCollisionCategory(this.shipCollisionCategory);
 
-    this.opponent = this.matter.add.image(3800, 1000, 'ship', null, {
+    this.opponent = this.matter.add.image(globals.width - 50, globals.height / 2, 'ship', null, {
         shape: {
             type: 'circle',
             radius: 90
@@ -85,6 +86,7 @@ battle.create = function()
     });
 
     this.opponent.setCollisionCategory(this.shipCollisionCategory);
+    this.opponent.setScale(0.5);
 
     // generate some asteroids
     for(i=0; i<20; i++)
@@ -92,7 +94,7 @@ battle.create = function()
         var size = randInRange(1, 1.5);
 
         this.asteroids.push(
-            this.matter.add.image(Phaser.Math.Between(500, 3500), Phaser.Math.Between(50,2200), 'asteroid', null, {
+            this.matter.add.image(Phaser.Math.Between(200, globals.width - 200), Phaser.Math.Between(50,globals.height - 50), 'asteroid', null, {
             density: 1,
             shape: {
                 type: 'circle',
@@ -101,7 +103,7 @@ battle.create = function()
             label: "asteroid",
             frictionAir: 0
         }));
-        this.asteroids[i].setScale(size);
+        this.asteroids[i].setScale(size / 2);
         this.asteroids[i].setVelocity(randInRange(-4, 4), randInRange(-4,4));
         this.asteroids[i].setCollisionCategory(this.asteroidCollisionCategory);
 
