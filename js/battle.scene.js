@@ -8,12 +8,7 @@ battle.preload = function()
 
 battle.create = function()
 {
-    //  You can enable the Attractors plugin either via the game config (see above), or explicitly in code:
-    // this.matter.system.enableAttractorPlugin();
-
     this.matter.world.setBounds();
-
-    
 
     this.asteroid = this.matter.add.imageStack('asteroid', null, 0, 500, 1, 1, 0, 0, {
         mass: 3,
@@ -48,9 +43,9 @@ battle.create = function()
                     normal = bToA.normalize();
                     magnitude = gravityConstant * (bodyA.mass * bodyB.mass / distanceSq);
                     force = new Phaser.Math.Vector2({x: normal.x * magnitude, y: normal.y * magnitude});
-                    console.log(force);
                     return force;
-                    /*
+
+                    /* old and terrible
                     var distance = Phaser.Math.Distance.Between(bodyA.position.x, bodyA.position.y, bodyB.position.x, bodyB.position.y);
                     if(battle.attractorActive)// && distance < 500)
                         return {
