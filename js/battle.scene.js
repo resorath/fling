@@ -44,7 +44,8 @@ battle.create = function()
                     distanceSq = bToA.lengthSq() || 0.0001;
                     normal = bToA.normalize();
                     //magnitude = gravityConstant * (bodyA.mass * bodyB.mass / distanceSq)
-                    magnitude = gravityConstant * (100 * bodyB.mass / distanceSq)  * 5000/bodyB.mass; 
+                    //magnitude = gravityConstant * (100 * bodyB.mass / distanceSq );
+                    magnitude = gravityConstant * (10000 * Math.sqrt(bodyB.mass, 2) / (distanceSq ) );
                     force = new Phaser.Math.Vector2({x: normal.x * magnitude, y: normal.y * magnitude});
                    // console.log(force);
                     return force;
@@ -75,7 +76,7 @@ battle.create = function()
     for(i=0; i<20; i++)
     {
         var size = randInRange(1, 1.5);
-        console.log(size);
+
         this.asteroids.push(
             this.matter.add.image(Phaser.Math.Between(500, 3500), Phaser.Math.Between(50,2200), 'asteroid', null, {
             density: 1,
@@ -111,16 +112,22 @@ battle.create = function()
 battle.asteroidCollide = function(opponent, asteroid)
 {
     //bodies = Matter.Composite.allBodies(battle.matter.world.engine.world);
+
+    var splicetarget = -1;
     for(i=0; i<battle.asteroids.length;i++)
     {
         if(asteroid == battle.asteroids[i].body)
         {
+            console.log(battle.asteroids[i].body.mass);
+            console.log(battle.asteroids[i].body.speed);
+
+
             battle.asteroids[i].destroy();
-            battle.asteroids[i] = null;
-            battle.asteroids.splice(i);
-            return;
+            battle.asteroids.splice(i, 1);
+            break;
         }
     }
+
     // asteroid.destroy();
     //this.asteroids[asteroid.id].destroy();
     //this.asteroids[asteroid.id] = null;
@@ -141,9 +148,6 @@ battle.update = function()
 
    for(i=0; i < this.asteroids.length; i++)
    {
-        if(this.asteroids[i] == null)
-            continue;
-
         if(this.attractorActive)
             this.asteroids[i].body.frictionAir = 0.01;
         else
