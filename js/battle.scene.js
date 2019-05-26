@@ -2,6 +2,7 @@ var battle = new Phaser.Scene('Battle');
 
 var Matter = Phaser.Physics.Matter.Matter;
 
+
 battle.preload = function()
 {
     this.load.image('asteroid', 'img/asteroid.png');
@@ -24,7 +25,7 @@ battle.create = function()
             type: 'circle',
             radius: 48
         },
-        mass: 100,
+        density: 1000,
         label: "ship",
 
         plugin: {
@@ -42,7 +43,8 @@ battle.create = function()
                     var bToA = a.subtract(b);
                     distanceSq = bToA.lengthSq() || 0.0001;
                     normal = bToA.normalize();
-                    magnitude = gravityConstant * (bodyA.mass * bodyB.mass / distanceSq) * 5000/bodyB.mass; // the last bit is our dragger for different body masses to feel heavier or lighter
+                    //magnitude = gravityConstant * (bodyA.mass * bodyB.mass / distanceSq)
+                    magnitude = gravityConstant * (100 * bodyB.mass / distanceSq)  * 5000/bodyB.mass; 
                     force = new Phaser.Math.Vector2({x: normal.x * magnitude, y: normal.y * magnitude});
                    // console.log(force);
                     return force;
@@ -60,45 +62,35 @@ battle.create = function()
         }
     });
 
-    this.opponent = this.matter.add.image(1800, 400, 'ship', null, {
+    this.opponent = this.matter.add.image(3800, 1000, 'ship', null, {
         shape: {
             type: 'circle',
             radius: 48
         },
-        mass: 100,
         label: "opponent",
+        density: 1000
     });
 
+    // generate some asteroids
+    for(i=0; i<20; i++)
+    {
+        var size = randInRange(1, 1.5);
+        console.log(size);
+        this.asteroids.push(
+            this.matter.add.image(Phaser.Math.Between(500, 3500), Phaser.Math.Between(50,2200), 'asteroid', null, {
+            density: 1,
+            shape: {
+                type: 'circle',
+                radius: 20 * size,
+            },
+            label: "asteroid"
+        }));
+        this.asteroids[i].setScale(size);
+        this.asteroids[i].setVelocity(randInRange(-4, 4), randInRange(-4,4));
+
+    }
+
     
-  /* this.asteroid = this.matter.add.imageStack('asteroid', null, 0, 500, 1, 1, 0, 0, {
-        mass: 3,
-        shape: {
-            type: 'circle',
-        },
-        label: "list asteroid"
-    });*/
-
-   /* this.asteroids.push(
-        this.matter.add.image(100, 100, 'asteroid', null, {
-        density: 3,
-        shape: {
-            type: 'circle',
-            radius: 24,
-        },
-        label: "asteroid"
-    }));
-    this.asteroids[0].setData("i", 0);*/
-
-    this.asteroids.push(
-        this.matter.add.image(100, 100, 'asteroid', null, {
-        density: 1,
-        shape: {
-            type: 'circle',
-            radius: 36,
-        },
-        label: "asteroid"
-    }));
-    this.asteroids[0].setScale(2);
 
     this.matter.world.on('collisionstart', function(event, bodyA, bodyB) {
 

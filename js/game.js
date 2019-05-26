@@ -3,8 +3,8 @@ var config = {
     debug: true,
     scale: {
         mode: Phaser.Scale.FIT,
-        width: 2000,
-        height: 1000
+        width: 4000,
+        height: 2250
     },
     backgroundColor: '#000000',
     physics: {
@@ -25,4 +25,9 @@ var config = {
 var game = new Phaser.Game(config);
 
 
+var rng = new Phaser.Math.RandomDataGenerator();
+function randInRange(f, c)
+{
+    return rng.frac() * (c - f + 1) + f;
+}
 
