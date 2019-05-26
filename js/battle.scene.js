@@ -42,8 +42,9 @@ battle.create = function()
                     var bToA = a.subtract(b);
                     distanceSq = bToA.lengthSq() || 0.0001;
                     normal = bToA.normalize();
-                    magnitude = gravityConstant * (bodyA.mass * bodyB.mass / distanceSq);
+                    magnitude = gravityConstant * (bodyA.mass * bodyB.mass / distanceSq) * 5000/bodyB.mass;
                     force = new Phaser.Math.Vector2({x: normal.x * magnitude, y: normal.y * magnitude});
+                    console.log(force);
                     return force;
 
                     /* old and terrible
@@ -79,28 +80,31 @@ battle.create = function()
 
     this.asteroids.push(
         this.matter.add.image(100, 100, 'asteroid', null, {
-        mass: 3,
+        density: 3,
         shape: {
-            type: 'circle'
+            type: 'circle',
+            radius: 24,
         },
         label: "asteroid"
     }));
 
     this.asteroids.push(
         this.matter.add.image(100, 100, 'asteroid', null, {
-        mass: 3,
+        density: 1,
         shape: {
-            type: 'circle'
+            type: 'circle',
+            radius: 36,
         },
         label: "asteroid"
     }));
+    this.asteroids[1].setScale(2);
 
     this.matter.world.on('collisionstart', function(event, bodyA, bodyB) {
 
+        console.log(bodyA.label);
         if(bodyA.label == "opponent" && bodyB.label == "asteroid")
         {
             console.log("HIT!");
-            bodyB.destroy();
         }
 
     })
@@ -120,9 +124,10 @@ battle.update = function()
        }
    );
 
-    /*if(this.attractorActive)
-        this.asteroid.bodies[0].frictionAir = 0.01;
+   for(i=0; i < this.asteroids.length; i++)
+    if(this.attractorActive)
+        this.asteroids[i].body.frictionAir = 0.01;
     else
-        this.asteroid.bodies[0].frictionAir = 0;*/
+        this.asteroids[i].body.frictionAir = 0;
 
 }
