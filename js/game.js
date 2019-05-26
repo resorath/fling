@@ -3,8 +3,8 @@ var config = {
     debug: true,
     scale: {
         mode: Phaser.Scale.FIT,
-        width: 800,
-        height: 600
+        width: 2000,
+        height: 1000
     },
     backgroundColor: '#000000',
     physics: {
