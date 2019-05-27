@@ -83,23 +83,28 @@ battle.create = function()
     // generate some asteroids
     for(i=0; i<0; i++)
     {
-        var size = randInRange(1, 1.5);
-
-        this.asteroids.push(
-            this.matter.add.image(Phaser.Math.Between(200, globals.width - 200), Phaser.Math.Between(50,globals.height - 50), 'asteroid', null, {
-            density: 1,
-            shape: {
-                type: 'circle',
-                radius: 20 * (size * 0.6),
+        this.makeasteroid(
+            {
+                x: Phaser.Math.Between(200, globals.width - 200),
+                y: Phaser.Math.Between(50,globals.height - 50)
             },
-            label: "asteroid",
-            frictionAir: 0
-        }));
-        this.asteroids[i].setScale(size / 2);
-        this.asteroids[i].setVelocity(randInRange(-1, 1), randInRange(-1,1));
-        this.asteroids[i].setCollisionCategory(this.asteroidCollisionCategory);
+            randInRange(1, 1.5),
+            {
+                x: randInRange(-1, 1),
+                y: randInRange(-1, 1)
+            }
+        )
 
     }
+
+    socket.on("asteroid.make", function(asteroid) {
+        console.log(asteroid);
+        battle.makeasteroid(
+            asteroid.position,
+            asteroid.size,
+            asteroid.velocity
+        )
+    });
 
     this.divider.setCollidesWith(this.shipCollisionCategory);
     
@@ -120,11 +125,28 @@ battle.create = function()
 
     
     socket.on("opponent.position", function(position) {
-        console.log(position);
         globals.opponentposition = position;
     });
 
 },
+
+battle.makeasteroid = function(position, size, velocity)
+{
+    
+    this.asteroids.push(
+        this.matter.add.image(position.x, position.y, 'asteroid', null, {
+        density: 1,
+        shape: {
+            type: 'circle',
+            radius: 20 * (size * 0.6),
+        },
+        label: "asteroid",
+        frictionAir: 0
+    }));
+    this.asteroids[i].setScale(size);
+    this.asteroids[i].setVelocity(velocity.x, velocity.y);
+    this.asteroids[i].setCollisionCategory(this.asteroidCollisionCategory);
+}
 
 battle.asteroidCollide = function(opponent, asteroid)
 {

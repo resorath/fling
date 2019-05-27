@@ -42,7 +42,6 @@ server.on("connection", function(socket) {
 
         opsocket.emit("opponent.position", p);
     });
-
 });
 
 
@@ -53,10 +52,44 @@ function getOppositeSocket(game, player)
     return game.sockets[oppositeplayer - 1];
 }
 
+// do things every 0.5 seconds
+setInterval(function() {
 
+    for(i=0; i<games.length; i++)
+    {
+        game = games[i];
+
+        if(game.started)
+        {
+            asteroid = {
+                position: {
+                    x: rand(200, 1800),
+                    y: rand(50, 800)
+                },
+                size: 1,
+                velocity: {
+                    x: rand(-2, 2),
+                    y: rand(-2, 2)
+                }
+            };
+
+            for(j=0;j<game.sockets.length;j++)
+            {
+                game.sockets[j].emit("asteroid.make", asteroid);
+            }
+        }
+    }
+
+
+}, 500);
 
 
 function Game() {
     this.sockets = [];
     this.started = false;
 }
+
+function rand(low, high) {
+    var r = (Math.random() * (high - low + 1)) + low;
+    return r;
+  }
