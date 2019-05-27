@@ -104,7 +104,7 @@ battle.create = function()
             frictionAir: 0
         }));
         this.asteroids[i].setScale(size / 2);
-        this.asteroids[i].setVelocity(randInRange(-4, 4), randInRange(-4,4));
+        this.asteroids[i].setVelocity(randInRange(-1, 1), randInRange(-1,1));
         this.asteroids[i].setCollisionCategory(this.asteroidCollisionCategory);
 
     }
