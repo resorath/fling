@@ -23,6 +23,8 @@ server.on("connection", function(socket) {
         game.sockets.push(socket);
         socket.game = game;
         socket.player = 2;
+
+        game.started = true;
         
         console.log("Game made!");
 
@@ -31,16 +33,30 @@ server.on("connection", function(socket) {
 
 
     socket.on("position", function(p) {
+        if(!socket.game.started)
+            return;
+
         socket.position = p;
+        
+        opsocket = getOppositeSocket(socket.game, socket.player);
+
+        opsocket.emit("opponent.position", p);
     });
 
-  });
+});
 
+
+function getOppositeSocket(game, player)
+{
+    oppositeplayer = player == 1 ? 2 : 1;
+
+    return game.sockets[oppositeplayer - 1];
+}
 
 
 
 
 function Game() {
     this.sockets = [];
-    
+    this.started = false;
 }

@@ -81,7 +81,7 @@ battle.create = function()
     this.opponent.setScale(0.5);
 
     // generate some asteroids
-    for(i=0; i<20; i++)
+    for(i=0; i<0; i++)
     {
         var size = randInRange(1, 1.5);
 
@@ -116,7 +116,13 @@ battle.create = function()
             battle.asteroidCollide(bodyB, bodyA);
         }
 
-    })
+    });
+
+    
+    socket.on("opponent.position", function(position) {
+        console.log(position);
+        globals.opponentposition = position;
+    });
 
 },
 
@@ -144,7 +150,6 @@ battle.asteroidCollide = function(opponent, asteroid)
     //this.asteroids[asteroid.id] = null;
 }
 
-
 battle.update = function() 
 {
     this.attractorActive = this.input.activePointer.isDown;
@@ -163,8 +168,9 @@ battle.update = function()
        }
    );
 
-    if(this.round % 3 == 0)
-        socket.emit("position", theship.position);
+    socket.emit("position", theship.position);
+
+    this.opponent.body.position = globals.opponentposition;
 
    for(i=0; i < this.asteroids.length; i++)
    {

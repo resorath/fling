@@ -1,6 +1,10 @@
 var globals = {
     width: 1900,
-    height: 1050
+    height: 1050,
+    opponentposition: {
+        x: 1850,
+        y: 525
+    }
 }
 
 var config = {
