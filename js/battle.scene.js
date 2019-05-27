@@ -16,6 +16,8 @@ battle.create = function()
     //this.cursors = this.input.keyboard.createCursorKeys();
     //this.cursors = this.input.keyboard.addKeys({up:Phaser.Input.Keyboard.KeyCodes.W,down:Phaser.Input.Keyboard.KeyCodes.S,left:Phaser.Input.Keyboard.KeyCodes.A,right:Phaser.Input.Keyboard.KeyCodes.S});
 
+    this.round = 0;
+
     this.asteroids = [];
 
     this.attractorActive = false;
@@ -57,17 +59,7 @@ battle.create = function()
                     magnitude = gravityConstant * (30 * bodyB.mass / distanceSq );
                     //magnitude = gravityConstant * (10000 * Math.sqrt(bodyB.mass, 2) / (distanceSq ) );
                     force = new Phaser.Math.Vector2({x: normal.x * magnitude, y: normal.y * magnitude});
-                   // console.log(force);
                     return force;
-
-                    /* old and terrible
-                    var distance = Phaser.Math.Distance.Between(bodyA.position.x, bodyA.position.y, bodyB.position.x, bodyB.position.y);
-                    if(battle.attractorActive)// && distance < 500)
-                        return {
-                            x: (bodyA.position.x - bodyB.position.x) * (1/(distance * 1000)),
-                            y: (bodyA.position.y - bodyB.position.y) * (1/(distance * 1000))
-                        };
-                    */
                 }
             ]
         }
@@ -152,6 +144,7 @@ battle.asteroidCollide = function(opponent, asteroid)
     //this.asteroids[asteroid.id] = null;
 }
 
+
 battle.update = function() 
 {
     this.attractorActive = this.input.activePointer.isDown;
@@ -170,6 +163,9 @@ battle.update = function()
        }
    );
 
+    if(this.round % 3 == 0)
+        socket.emit("position", theship.position);
+
    for(i=0; i < this.asteroids.length; i++)
    {
         if(this.attractorActive)
@@ -178,4 +174,6 @@ battle.update = function()
             this.asteroids[i].body.frictionAir = 0;
    }
 
+
+   this.round++;
 }

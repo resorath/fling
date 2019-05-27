@@ -29,9 +29,6 @@ var config = {
     scene: [battle]
 };
 
-var game = new Phaser.Game(config);
-
-
 var rng = new Phaser.Math.RandomDataGenerator();
 function randInRange(f, c)
 {
@@ -40,7 +37,12 @@ function randInRange(f, c)
 
 var socket = io("http://localhost:3000");
     // use your socket
-    socket.on("welcome", (message) => {
-        console.log(message);
-    }
-)
+socket.on("player", (playerid) => {
+    
+    var game = new Phaser.Game(config);
+
+    globals.player = playerid;
+
+    console.log("player " + globals.player);
+
+})
