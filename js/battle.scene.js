@@ -112,7 +112,7 @@ battle.create = function()
     
 
     this.matter.world.on('collisionstart', function(event, bodyA, bodyB) {
-
+/*
         if(bodyA.label == "opponent" && bodyB.label == "asteroid")
         {
             battle.asteroidCollide(bodyA, bodyB);
@@ -122,7 +122,7 @@ battle.create = function()
         {
             battle.asteroidCollide(bodyB, bodyA);
         }
-
+*/
     });
 
     

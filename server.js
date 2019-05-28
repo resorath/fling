@@ -46,7 +46,7 @@ server.on("connection", function(socket) {
     socket.on("attractorActive", function(a) {
         if(!socket.game.started)
             return;
-
+            
         socket.attractorActive = a;
         
         opsocket = getOppositeSocket(socket.game, socket.player);
