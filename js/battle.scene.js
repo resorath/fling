@@ -21,12 +21,12 @@ battle.create = function()
     this.asteroids = [];
 
     this.attractorActive = false;
+    this.opponentAttractorActive = false;
 
     // divider
     dividerpoly = '0 0 20 0 20 5000 0 5000';
     this.divider = this.add.polygon(globals.width / 2, 0, dividerpoly, 0xffffff, 1.0);
     this.matter.add.gameObject(this.divider, { shape: { type: 'fromVerts', verts: dividerpoly, flagInternal: true, isStatic: true } }).setStatic(true);
-   // divider.gameObject.setTint(0xffffff);
 
     this.asteroidCollisionCategory = this.matter.world.nextCategory();
     this.shipCollisionCategory = this.matter.world.nextCategory();
@@ -48,25 +48,14 @@ battle.create = function()
                     if(bodyB.label != "asteroid")
                         return;
 
-                    var gravityConstant = 0.7;
-                    var a = new Phaser.Math.Vector2(bodyA.position.x, bodyA.position.y);
-                    var b = new Phaser.Math.Vector2(bodyB.position.x, bodyB.position.y);
-                    var bToA = a.subtract(b);
-                    distanceSq = bToA.lengthSq() || 0.0001;
-                    distanceSq = Math.pow(distanceSq, 1/1.1); // screw with this number some more
-                    normal = bToA.normalize();
-                    //magnitude = gravityConstant * (bodyA.mass * bodyB.mass / distanceSq)
-                    magnitude = gravityConstant * (30 * bodyB.mass / distanceSq );
-                    //magnitude = gravityConstant * (10000 * Math.sqrt(bodyB.mass, 2) / (distanceSq ) );
-                    force = new Phaser.Math.Vector2({x: normal.x * magnitude, y: normal.y * magnitude});
-                    return force;
+                    return battle.attractorForce(bodyA, bodyB);
                 }
             ]
         }
     });
-    this.ship.setScale(0.5);
 
     this.ship.setCollisionCategory(this.shipCollisionCategory);
+    this.ship.setScale(0.5);
 
     this.opponent = this.matter.add.image(globals.width - 50, globals.height / 2, 'ship', null, {
         shape: {
@@ -74,7 +63,21 @@ battle.create = function()
             radius: 90
         },
         label: "opponent",
-        density: 1000
+        density: 1000,
+
+        plugin: {
+            attractors: [
+                function (bodyA, bodyB) {
+                    if(!globals.opponentAttractorActive)
+                        return;
+
+                    if(bodyB.label != "asteroid")
+                        return;
+
+                    return battle.attractorForce(bodyA, bodyB);
+                }
+            ]
+        }
     });
 
     this.opponent.setCollisionCategory(this.shipCollisionCategory);
@@ -98,7 +101,6 @@ battle.create = function()
     }
 
     socket.on("asteroid.make", function(asteroid) {
-        console.log(asteroid);
         battle.makeasteroid(
             asteroid.position,
             asteroid.size,
@@ -127,6 +129,10 @@ battle.create = function()
     socket.on("opponent.position", function(position) {
         globals.opponentposition = position;
     });
+
+    socket.on("opponent.attractorActive", function(attractorActive) {
+        globals.opponentAttractorActive = attractorActive;
+    })
 
 },
 
@@ -174,7 +180,26 @@ battle.asteroidCollide = function(opponent, asteroid)
 
 battle.update = function() 
 {
+    if(this.input.activePointer.isDown)
+    {
+        if(!this.attractorActive)
+        {
+            this.attractorActive = true;
+            socket.emit("attractorActive", this.attractorActive);
+        }
+    }
+    else
+    {
+        if(this.attractorActive)
+        {
+            this.attractorActive = false;
+            socket.emit("attractorActive", this.attractorActive);
+        }
+    }
+
     this.attractorActive = this.input.activePointer.isDown;
+
+    
 
    theship = this.ship.body;
 
@@ -204,4 +229,20 @@ battle.update = function()
 
 
    this.round++;
+}
+
+battle.attractorForce = function(bodyA, bodyB)
+{
+    var gravityConstant = 0.7;
+    var a = new Phaser.Math.Vector2(bodyA.position.x, bodyA.position.y);
+    var b = new Phaser.Math.Vector2(bodyB.position.x, bodyB.position.y);
+    var bToA = a.subtract(b);
+    distanceSq = bToA.lengthSq() || 0.0001;
+    distanceSq = Math.pow(distanceSq, 1/1.1); // screw with this number some more
+    normal = bToA.normalize();
+    //magnitude = gravityConstant * (bodyA.mass * bodyB.mass / distanceSq)
+    magnitude = gravityConstant * (30 * bodyB.mass / distanceSq );
+    //magnitude = gravityConstant * (10000 * Math.sqrt(bodyB.mass, 2) / (distanceSq ) );
+    force = new Phaser.Math.Vector2({x: normal.x * magnitude, y: normal.y * magnitude});
+    return force;
 }

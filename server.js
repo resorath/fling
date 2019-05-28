@@ -42,6 +42,17 @@ server.on("connection", function(socket) {
 
         opsocket.emit("opponent.position", p);
     });
+
+    socket.on("attractorActive", function(a) {
+        if(!socket.game.started)
+            return;
+
+        socket.attractorActive = a;
+        
+        opsocket = getOppositeSocket(socket.game, socket.player);
+
+        opsocket.emit("opponent.attractorActive", a);
+    });
 });
 
 
