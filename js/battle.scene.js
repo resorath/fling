@@ -68,7 +68,7 @@ battle.create = function()
         plugin: {
             attractors: [
                 function (bodyA, bodyB) {
-                    if(!globals.opponentAttractorActive)
+                    if(!battle.opponentAttractorActive)
                         return;
 
                     if(bodyB.label != "asteroid")
@@ -131,7 +131,7 @@ battle.create = function()
     });
 
     socket.on("opponent.attractorActive", function(attractorActive) {
-        globals.opponentAttractorActive = attractorActive;
+        battle.opponentAttractorActive = attractorActive;
     })
 
 },
@@ -158,7 +158,6 @@ battle.asteroidCollide = function(opponent, asteroid)
 {
     //bodies = Matter.Composite.allBodies(battle.matter.world.engine.world);
 
-    var splicetarget = -1;
     for(i=0; i<battle.asteroids.length;i++)
     {
         if(asteroid == battle.asteroids[i].body)
