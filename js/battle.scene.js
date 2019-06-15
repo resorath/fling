@@ -102,13 +102,23 @@ battle.create = function()
 
     }
 
-    socket.on("asteroid.make", function(asteroid) {
-        battle.makeasteroid(
-            asteroid.position,
-            asteroid.size,
-            asteroid.velocity
-        )
-    });
+    window.setInterval(function() 
+    {
+        asteroid = {
+            position: {
+                x: randInRange(200, 1800),
+                y: randInRange(50, 800)
+            },
+            size: 1,
+            velocity: {
+                x: randInRange(-2, 2),
+                y: randInRange(-2, 2)
+            }
+        };
+
+        battle.makeasteroid(asteroid.position, asteroid.size, asteroid.velocity);
+        
+    }, 2000);
 
     this.divider.setCollidesWith(this.shipCollisionCategory);
     
@@ -127,14 +137,6 @@ battle.create = function()
 */
     });
 
-    
-    socket.on("opponent.position", function(position) {
-        globals.opponentposition = position;
-    });
-
-    socket.on("opponent.attractorActive", function(attractorActive) {
-        battle.opponentAttractorActive = attractorActive;
-    })
 
 },
 
@@ -186,7 +188,6 @@ battle.update = function()
         if(!this.attractorActive)
         {
             this.attractorActive = true;
-            socket.emit("attractorActive", this.attractorActive);
         }
     }
     else
@@ -194,7 +195,6 @@ battle.update = function()
         if(this.attractorActive)
         {
             this.attractorActive = false;
-            socket.emit("attractorActive", this.attractorActive);
         }
     }
 
@@ -215,8 +215,6 @@ battle.update = function()
            y: (battle.input.activePointer.y - theship.position.y) * 0.05
        }
    );
-
-    socket.emit("position", theship.position);
 
     this.opponent.body.position = globals.opponentposition;
 

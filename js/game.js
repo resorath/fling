@@ -39,14 +39,5 @@ function randInRange(f, c)
     return rng.frac() * (c - f + 1) + f;
 }
 
-var socket = io("http://localhost:3000");
-    // use your socket
-socket.on("player", (playerid) => {
-    
-    var game = new Phaser.Game(config);
+var game = new Phaser.Game(config);
 
-    globals.player = playerid;
-
-    console.log("player " + globals.player);
-
-})
