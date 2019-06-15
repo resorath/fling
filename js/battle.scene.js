@@ -48,6 +48,8 @@ battle.create = function()
                     if(bodyB.label != "asteroid")
                         return;
 
+                    console.log(bodyB.label);
+
                     return battle.attractorForce(bodyA, bodyB);
                 }
             ]
