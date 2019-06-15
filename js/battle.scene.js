@@ -117,7 +117,7 @@ battle.create = function()
         };
 
         battle.makeasteroid(asteroid.position, asteroid.size, asteroid.velocity);
-        
+
     }, 2000);
 
     this.divider.setCollidesWith(this.shipCollisionCategory);
@@ -183,20 +183,6 @@ battle.asteroidCollide = function(opponent, asteroid)
 
 battle.update = function() 
 {
-    if(this.input.activePointer.isDown)
-    {
-        if(!this.attractorActive)
-        {
-            this.attractorActive = true;
-        }
-    }
-    else
-    {
-        if(this.attractorActive)
-        {
-            this.attractorActive = false;
-        }
-    }
 
     this.attractorActive = this.input.activePointer.isDown;
 
@@ -208,6 +194,7 @@ battle.update = function()
    if(theship.position.x > 1940)
     directionmod = -3;
 
+   // Move the ship towards the cursor
    Matter.Body.translate(
        theship, 
        {
@@ -218,6 +205,7 @@ battle.update = function()
 
     this.opponent.body.position = globals.opponentposition;
 
+   // Increase friction of asteroids while under the attractor 
    for(i=0; i < this.asteroids.length; i++)
    {
         if(this.attractorActive)
@@ -226,6 +214,15 @@ battle.update = function()
             this.asteroids[i].body.frictionAir = 0;
    }
 
+   // Clean up out of bounds asteroids
+   for(i=0; i < this.asteroids.length; i++)
+   {
+        if(this.asteroids[i].x < 0 || this.asteroids[i].x > globals.width || this.asteroids[i].y < 0 || this.asteroids[i].y > globals.height)
+        {
+            this.asteroids[i].destroy();
+            this.asteroids.splice(i, 1);
+        }
+   }
 
    this.round++;
 }
